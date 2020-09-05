@@ -59,7 +59,9 @@ const llenarSelectConDispositivosDisponibles = () => {
     // Comenzamos viendo si tiene soporte, si no, nos detenemos
     if (!tieneSoporteUserMedia()) {
         alert("Lo siento. Tu navegador no soporta esta característica");
+
         $estado.innerHTML = "Parece que tu navegador no soporta esta característica. Intenta actualizarlo.";
+        
         return;
     }
 

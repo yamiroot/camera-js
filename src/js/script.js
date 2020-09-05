@@ -7,7 +7,39 @@ const $video = document.querySelector("#video"),
     $divSelect = document.querySelector('#divSelect'),
     $buttonCapture = document.querySelector('#button-capture'),
     $divVideo = document.getElementById('divVideo'),
-    $divCanva = document.querySelector('divCanva');
+    $divCanva = document.querySelector('divCanva'),
+    $buttonDownload = document.querySelector('#button-download');
+
+let stream;
+
+
+const alertSupportVideo = (textContent) => {
+    $state.classList.add('alert-danger');
+    $state.innerHTML = textContent;
+
+    setTimeout(() => {
+        $state.innerHTML = '';
+        $state.classList.remove('alert-danger');
+    }, 3000);
+}
+
+
+const devicesVideo = (devicesList) => {
+    const devicesVideo = [];
+
+    if (devicesList.length !== 0 && devicesList !== '') {
+        // Vamos a filtrarlos y guardar aquí los de vídeo
+        devicesList.forEach((device) => {
+            const type = device.kind;
+
+            if (type === "videoinput") {
+                devicesVideo.push(device);
+            }
+        });
+    }
+
+    return devicesVideo;
+}
 
 
 const hasSupportUserMedia = () =>
@@ -21,18 +53,9 @@ const _getUserMedia = (...arguments) =>
     (navigator.getUserMedia || (navigator.mozGetUserMedia || navigator.mediaDevices.getUserMedia) || navigator.webkitGetUserMedia || navigator.msGetUserMedia).apply(navigator, arguments);
 
 
-const callCombo = (devicesVideo, numberDevices) => {
+const callCombo = (devicesVideo) => {
     const option = document.createElement('option');
     let _node = null;
-
-    if (numberDevices === 2) {
-        _node = option.cloneNode(false);
-        _node.value = '';
-        _node.text = 'Seleccione';
-        _node.setAttribute('selected', 'selected');
-
-        $devicesList.appendChild(_node); 
-    } 
 
     // Llenar el select
     devicesVideo.forEach(device => {
@@ -84,61 +107,80 @@ const llenarSelectConDispositivosDisponibles = () => {
 }
 
 
-const showStream = idDevice => {
+const showStream = (idDevice) => {
+    let photo;
+
     _getUserMedia({
         video: {
-            // Justo aquí indicamos cuál dispositivo usar
             deviceId: idDevice,
         }
     },
-        (streamObtenido) => {
-            $divVideo.classList.remove('hidden');
+        (streamObtained) => {
+            clearSelect();
+
             // Aquí ya tenemos permisos, ahora sí llenamos el select,
             // pues si no, no nos daría el nombre de los dispositivos
-            /* llenarSelectConDispositivosDisponibles(); */
-          /*   callCombo() */
 
-            // Escuchar cuando seleccionen otra opción y entonces llamar a esta función
-           /*  $devicesList.onchange = () => {
-                // Detener el stream
-                if (stream) {
-                    stream.getTracks().forEach(function (track) {
-                        track.stop();
-                    });
-                }
+            getDevices()
+                .then((devicesList) => {
+                    if (devicesVideo(devicesList).length > 0) {
+                        callCombo(devicesVideo(devicesList));
 
-                // Mostrar el nuevo stream con el dispositivo seleccionado
-                showStream($devicesList.value);
-            } */
+                        $divSelect.classList.remove('hidden');
+                        $divVideo.classList.remove('hidden');
 
-            // Simple asignación
-            stream = streamObtenido;
+                        // Escuchar cuando seleccionen otra opción y entonces llamar a esta función
+                        $devicesList.onchange = () => {
+                            // Detener el stream
+                            if (stream) {
+                                stream.getTracks().forEach(function (track) {
+                                    track.stop();
+                                });
+                            }
 
-            // Mandamos el stream de la cámara al elemento de vídeo
-            $video.srcObject = stream;
-            $video.play();
+                            // Mostrar el nuevo stream con el dispositivo seleccionado
+                            showStream($devicesList.value);
+                        }
 
-            //Escuchar el click del botón para tomar la foto
-            $buttonCapture.addEventListener("click", function () {
+                        // Simple asignación
+                        stream = streamObtained;
 
-                //Pausar reproducción
-                $video.pause();
+                        // Mandamos el stream de la cámara al elemento de vídeo
+                        $video.srcObject = stream;
+                        $video.play();
 
-                //Obtener contexto del canvas y dibujar sobre él
-                let contexto = $canvas.getContext("2d");
-                $canvas.width = $video.videoWidth;
-                $canvas.height = $video.videoHeight;
-                contexto.drawImage($video, 0, 0, $canvas.width, $canvas.height);
+                        //Escuchar el click del botón para tomar la foto
+                        $buttonCapture.addEventListener("click", function () {
 
-                let foto = $canvas.toDataURL(); //Esta es la foto, en base 64
+                            //Pausar reproducción
+                            $video.pause();
 
-                let enlace = document.createElement('a'); // Crear un <a>
-                enlace.download = "foto_parzibyte.me.png";
-                enlace.href = foto;
-                enlace.click();
-                //Reanudar reproducción
-                $video.play();
-            });
+                            //Obtener contexto del canvas y dibujar sobre él
+                            let contexto = $canvas.getContext("2d");
+                            $canvas.width = $video.videoWidth;
+                            $canvas.height = $video.videoHeight;
+                            contexto.drawImage($video, 0, 0, $canvas.width, $canvas.height);
+
+                            photo = $canvas.toDataURL(); //Esta es la foto, en base 64
+
+                            //Reanudar reproducción
+                            $video.play();
+                        });
+
+                        $buttonDownload.addEventListener('click', () => {
+                            let enlace = document.createElement('a'); // Crear un <a>
+                            enlace.download = "photo.png";
+                            enlace.href = photo;
+
+                            enlace.click();
+                        });
+                    }
+                })
+                .catch(() => {
+
+                });
+
+
         }, (error) => {
             console.log("Permiso denegado o error: ", error);
 
@@ -150,55 +192,24 @@ const showStream = idDevice => {
 
 (() => {
     $buttonAccess.addEventListener('click', () => {
+        $state.innerHTML = '';
+        clearSelect();
 
         // Comenzamos viendo si tiene soporte
         if (!hasSupportUserMedia()) {
-            $state.classList.add('alert-danger');
-            $state.innerHTML = "Parece que tu navegador no soporta esta característica. Intenta actualizarlo.";
-
-            setTimeout(() => {
-                $state.innerHTML = '';
-                $state.classList.remove('alert-danger');
-            }, 3000);
-
+            alertSupportVideo("Parece que tu navegador no soporta esta característica. Intenta actualizarlo.");
             return;
         } else {
-
-            $divSelect.classList.remove('hidden');
-
-            // Comenzamos pidiendo los dispositivos
+            // Comenzamos evaluamos si posee dispositivos de video
             getDevices()
-                .then(devices => {
-                    console.log(devices)
-                    if (devices.length !== 0 && devices !== '') {
-                        // Vamos a filtrarlos y guardar aquí los de vídeo
-                        const devicesVideo = [];
+                .then(devicesList => {
+                    console.log(devicesList);
 
-                        // Recorrer y filtrar
-                        devices.forEach((device) => {
-                            const type = device.kind;
-
-                            if (type === "videoinput") {
-                                devicesVideo.push(device);
-                            }
-                        });
-
-                        // Vemos si encontramos algún dispositivo, y en caso de que si, entonces llamamos a la función
-                        // y le pasamos el id de dispositivo
-                        if (devicesVideo.length > 0) {
-                            // Mostrar stream con el ID del primer dispositivo, luego el usuario puede cambiar
-                            /* showStream(devicesVideo[0].deviceId); */
-                           
-                            if (devicesVideo.length === 1) {
-                                // Rellenamos el combo
-                                callCombo(devicesVideo, 1);
-
-                                // Mostrar stream con el ID del único dispositivo
-                                showStream(devicesVideo[0].deviceId);
-                            } else {
-                                callCombo(devicesVideo, 2);
-                            }
-                        }
+                    if (devicesVideo(devicesList).length > 0) {
+                        // Mostrar stream con el ID del primer dispositivo, luego el usuario puede cambiar
+                        showStream(devicesList[1].deviceId);
+                    } else {
+                        alertSupportVideo('No se encontraron dispositivos de video disponibles.');
                     }
                 });
         }
