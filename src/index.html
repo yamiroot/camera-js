@@ -19,21 +19,23 @@
         <div class="container d-flex flex-column w-75 mt-4">
             <button class="btn btn-success btn-lg mx-auto" id="button-access">Acceder cámara</button>
 
-            <div class="w-50 mx-auto hidden" id="divSelect">
-                <label>Selecciona un dispositivo</label>
-                <select name="device" id="devicesList" class="form-control">Dispositivo</select>
+            <div class="w-75 mx-auto hidden" id="divSelect">
+                <div class="mx-auto d-flex flex-column justify-content-center">
+                    <label>Selecciona un dispositivo</label>
+                    <select name="device" id="devicesList" class="form-control">Dispositivo</select>
+                </div>
             </div>
         </div>
 
         <div class="w-75 alert mx-auto d-flex justify-content-center mt-5" id="state" role="alert"></div>
 
         <div class="d-flex justify-content-around mt-5">
-            <div class="hidden">
+            <div id="divVideo" class="hidden">
                 <video src="" id="video"></video>
-                <button class="btn btn-warning btn-lg mt-3">Tomar foto</button>
+                <button id="button-capture" class="btn btn-warning btn-lg mt-3">Tomar foto</button>
             </div>
 
-            <div class="hidden">
+            <div id="divCanva" >
                 <canvas id="canvas"></canvas>
                 <button class="btn btn-info btn-lg mt-3">Descargar foto</button>
             </div>

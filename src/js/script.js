@@ -4,7 +4,10 @@ const $video = document.querySelector("#video"),
     $buttonAccess = document.querySelector("#button-access"),
     $devicesList = document.querySelector("#devicesList"),
     $state = document.querySelector('#state'),
-    $divSelect = document.querySelector('#divSelect');
+    $divSelect = document.querySelector('#divSelect'),
+    $buttonCapture = document.querySelector('#button-capture'),
+    $divVideo = document.getElementById('divVideo'),
+    $divCanva = document.querySelector('divCanva');
 
 
 const hasSupportUserMedia = () =>
@@ -16,6 +19,30 @@ const getDevices = () => navigator.mediaDevices.enumerateDevices();
 
 const _getUserMedia = (...arguments) =>
     (navigator.getUserMedia || (navigator.mozGetUserMedia || navigator.mediaDevices.getUserMedia) || navigator.webkitGetUserMedia || navigator.msGetUserMedia).apply(navigator, arguments);
+
+
+const callCombo = (devicesVideo, numberDevices) => {
+    const option = document.createElement('option');
+    let _node = null;
+
+    if (numberDevices === 2) {
+        _node = option.cloneNode(false);
+        _node.value = '';
+        _node.text = 'Seleccione';
+        _node.setAttribute('selected', 'selected');
+
+        $devicesList.appendChild(_node); 
+    } 
+
+    // Llenar el select
+    devicesVideo.forEach(device => {
+        _node = option.cloneNode(false);
+        _node.value = device.deviceId;
+        _node.text = device.label;
+
+        $devicesList.appendChild(_node);
+    });
+}
 
 
 const clearSelect = () => {
@@ -65,12 +92,14 @@ const showStream = idDevice => {
         }
     },
         (streamObtenido) => {
+            $divVideo.classList.remove('hidden');
             // Aquí ya tenemos permisos, ahora sí llenamos el select,
             // pues si no, no nos daría el nombre de los dispositivos
-            llenarSelectConDispositivosDisponibles();
+            /* llenarSelectConDispositivosDisponibles(); */
+          /*   callCombo() */
 
             // Escuchar cuando seleccionen otra opción y entonces llamar a esta función
-            $devicesList.onchange = () => {
+           /*  $devicesList.onchange = () => {
                 // Detener el stream
                 if (stream) {
                     stream.getTracks().forEach(function (track) {
@@ -80,7 +109,7 @@ const showStream = idDevice => {
 
                 // Mostrar el nuevo stream con el dispositivo seleccionado
                 showStream($devicesList.value);
-            }
+            } */
 
             // Simple asignación
             stream = streamObtenido;
@@ -90,7 +119,7 @@ const showStream = idDevice => {
             $video.play();
 
             //Escuchar el click del botón para tomar la foto
-            $boton.addEventListener("click", function () {
+            $buttonCapture.addEventListener("click", function () {
 
                 //Pausar reproducción
                 $video.pause();
@@ -112,6 +141,8 @@ const showStream = idDevice => {
             });
         }, (error) => {
             console.log("Permiso denegado o error: ", error);
+
+            $state.classList.add('alert-danger');
             $state.innerHTML = "No se puede acceder a la cámara, o no diste permiso.";
         });
 }
@@ -122,8 +153,8 @@ const showStream = idDevice => {
 
         // Comenzamos viendo si tiene soporte
         if (!hasSupportUserMedia()) {
-            $state.innerHTML = "Parece que tu navegador no soporta esta característica. Intenta actualizarlo.";
             $state.classList.add('alert-danger');
+            $state.innerHTML = "Parece que tu navegador no soporta esta característica. Intenta actualizarlo.";
 
             setTimeout(() => {
                 $state.innerHTML = '';
@@ -132,7 +163,6 @@ const showStream = idDevice => {
 
             return;
         } else {
-            clearSelect();
 
             $divSelect.classList.remove('hidden');
 
@@ -158,27 +188,16 @@ const showStream = idDevice => {
                         if (devicesVideo.length > 0) {
                             // Mostrar stream con el ID del primer dispositivo, luego el usuario puede cambiar
                             /* showStream(devicesVideo[0].deviceId); */
-                            const option = document.createElement('option');
-                            let _node = null;
                            
-                            console.log(devicesVideo.length)
                             if (devicesVideo.length === 1) {
-                                _node = option.cloneNode(false);
-                                _node.value = '';
-                                _node.text = 'Seleccione';
-                                _node.setAttribute('selected', 'selected');
+                                // Rellenamos el combo
+                                callCombo(devicesVideo, 1);
 
-                                $devicesList.appendChild(_node); 
-                            } 
-
-                            // Llenar el select
-                            devicesVideo.forEach(device => {
-                                _node = option.cloneNode(false);
-                                _node.value = device.deviceId;
-                                _node.text = device.label;
-
-                                $devicesList.appendChild(option);
-                            });
+                                // Mostrar stream con el ID del único dispositivo
+                                showStream(devicesVideo[0].deviceId);
+                            } else {
+                                callCombo(devicesVideo, 2);
+                            }
                         }
                     }
                 });
