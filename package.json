@@ -1,0 +1,28 @@
+{
+  "name": "camera",
+  "version": "1.0.0",
+  "description": "camera en js",
+  "main": "index.html",
+  "scripts": {
+    "test": "test",
+    "start": "serve ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yamiroot/camera-js.git"
+  },
+  "keywords": [
+    "camera",
+    "js",
+    "vanilla"
+  ],
+  "author": "yamiroot",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yamiroot/camera-js/issues"
+  },
+  "homepage": "https://github.com/yamiroot/camera-js#readme",
+  "devDependencies": {
+    "serve": "^11.3.2"
+  }
+}
