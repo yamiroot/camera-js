@@ -53,7 +53,9 @@ const _getUserMedia = (...arguments) =>
     (navigator.getUserMedia || (navigator.mozGetUserMedia || navigator.mediaDevices.getUserMedia) || navigator.webkitGetUserMedia || navigator.msGetUserMedia).apply(navigator, arguments);
 
 
-const callCombo = (devicesVideo) => {
+const callCombo = (devicesVideo, idDevice) => {
+    console.log(idDevice, devicesVideo)
+    const _xDocFrag = document.createDocumentFragment();
     const option = document.createElement('option');
     let _node = null;
 
@@ -63,8 +65,15 @@ const callCombo = (devicesVideo) => {
         _node.value = device.deviceId;
         _node.text = device.label;
 
-        $devicesList.appendChild(_node);
+        if (device.deviceId === idDevice) {
+            _node.setAttribute('selected', 'selected');
+        }
+
+        _xDocFrag.appendChild(_node);
     });
+
+    clearSelect();
+    $devicesList.appendChild(_xDocFrag);
 }
 
 
@@ -74,41 +83,10 @@ const clearSelect = () => {
 };
 
 
-// La función que es llamada después de que ya se dieron los permisos
-// Lo que hace es llenar el select con los dispositivos obtenidos
-const llenarSelectConDispositivosDisponibles = () => {
-
-    getDevices()
-        .then(dispositivos => {
-            console.log(dispositivos);
-
-            const dispositivosDeVideo = [];
-
-            dispositivos.forEach(dispositivo => {
-                const tipo = dispositivo.kind;
-
-                if (tipo === "videoinput") {
-                    dispositivosDeVideo.push(dispositivo);
-                }
-            });
-
-            // Vemos si encontramos algún dispositivo, y en caso de que si, entonces llamamos a la función
-            if (dispositivosDeVideo.length > 0) {
-                // Llenar el select
-                dispositivosDeVideo.forEach(dispositivo => {
-                    const option = document.createElement('option');
-                    option.value = dispositivo.deviceId;
-                    option.text = dispositivo.label;
-
-                    $listaDeDispositivos.appendChild(option);
-                });
-            }
-        });
-}
-
-
 const showStream = (idDevice) => {
     let photo;
+
+    console.log(idDevice, 'iddddd')
 
     _getUserMedia({
         video: {
@@ -116,7 +94,7 @@ const showStream = (idDevice) => {
         }
     },
         (streamObtained) => {
-            clearSelect();
+   
 
             // Aquí ya tenemos permisos, ahora sí llenamos el select,
             // pues si no, no nos daría el nombre de los dispositivos
@@ -124,13 +102,14 @@ const showStream = (idDevice) => {
             getDevices()
                 .then((devicesList) => {
                     if (devicesVideo(devicesList).length > 0) {
-                        callCombo(devicesVideo(devicesList));
+                        callCombo(devicesVideo(devicesList), idDevice);
 
                         $divSelect.classList.remove('hidden');
                         $divVideo.classList.remove('hidden');
 
                         // Escuchar cuando seleccionen otra opción y entonces llamar a esta función
                         $devicesList.onchange = () => {
+                            
                             // Detener el stream
                             if (stream) {
                                 stream.getTracks().forEach(function (track) {
@@ -140,6 +119,7 @@ const showStream = (idDevice) => {
 
                             // Mostrar el nuevo stream con el dispositivo seleccionado
                             showStream($devicesList.value);
+
                         }
 
                         // Simple asignación
@@ -191,6 +171,8 @@ const showStream = (idDevice) => {
 
 
 (() => {
+    let num = 0;
+
     $buttonAccess.addEventListener('click', () => {
         $state.innerHTML = '';
         clearSelect();
@@ -205,9 +187,12 @@ const showStream = (idDevice) => {
                 .then(devicesList => {
                     console.log(devicesList);
 
+                    console.log(devicesVideo(devicesList))
+
                     if (devicesVideo(devicesList).length > 0) {
+                        console.log(num+=1)
                         // Mostrar stream con el ID del primer dispositivo, luego el usuario puede cambiar
-                        showStream(devicesList[1].deviceId);
+                        showStream(devicesList[0].deviceId);
                     } else {
                         alertSupportVideo('No se encontraron dispositivos de video disponibles.');
                     }
