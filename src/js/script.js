@@ -15,12 +15,12 @@ let stream;
 
 
 const alertSupportVideo = (textContent) => {
-    $state.classList.add('alert-danger');
+    $state.classList.add('alert-danger', 'mt-4');
     $state.innerHTML = textContent;
 
     setTimeout(() => {
         $state.innerHTML = '';
-        $state.classList.remove('alert-danger');
+        $state.classList.remove('alert-danger', 'mt-4');
     }, 3000);
 }
 
@@ -166,8 +166,7 @@ const showStream = (idDevice) => {
         }, (error) => {
             console.log("Permiso denegado o error: ", error);
 
-            $state.classList.add('alert-danger');
-            $state.innerHTML = "No se puede acceder a la cámara, o no diste permiso.";
+            alertSupportVideo('No se puede acceder a la cámara, o no diste permiso.');
         });
 }
 

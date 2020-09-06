@@ -6,6 +6,162 @@ select {
     width: 80%;
 }
 
+canvas {
+     width: 100%;
+}
+
 .hidden {
     display: none;
+}
+
+@media (max-width: 319px) {
+    h3 {
+        font-size: 17px;
+    }
+
+    #button-access, #button-capture, #button-download {
+        width: 60%;
+    }
+
+    #button-access, #button-capture, #button-download, label, select[name="device"] {
+        font-size: 11px;
+    }
+
+    #divSelect {
+        width: 85%;
+        margin-top: 10%;
+    }
+
+    #div-container-stream {
+        flex-direction: column;
+    }
+
+    #divCanva {
+        margin-top: 10%;
+    }
+}
+
+@media (min-width: 320px) and (max-width: 479px) {
+    h3 {
+        font-size: 19px;
+    }
+
+    #button-access, #button-capture, #button-download {
+        width: 55%;
+    }
+
+    #button-access, #button-capture, #button-download, label, select[name="device"] {
+        font-size: 12px;
+    }
+
+    #divSelect {
+        width: 75%;
+    }
+
+    #div-container-stream {
+        flex-direction: column;
+    }
+
+    #divCanva {
+        margin-top: 6%;
+    }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+    h3 {
+        font-size: 19px;
+    }
+
+    #button-access, #button-capture, #button-download {
+        width: 55%;
+    }
+
+    #button-access, #button-capture, #button-download, label, select[name="device"] {
+        font-size: 12px;
+    }
+
+    #divSelect {
+        width: 60%;
+    }
+
+    #div-container-stream {
+        flex-direction: column;
+    }
+
+    #divCanva {
+        margin-top: 5%;
+    }
+
+    #divVideo, #divCanva {
+        width: 75%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    h3 {
+        font-size: 20px;
+    }
+
+    #button-access, #button-capture, #button-download {
+        width: 35%;
+    }
+
+    #button-access, #button-capture, #button-download, label, select[name="device"] {
+        font-size: 13px;
+    }
+
+    #divSelect {
+        width: 50%;
+        margin-top: 4%;
+    }
+
+    #divVideo, #divCanva {
+        width: 50%;
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) { 
+    h3 {
+        font-size: 21px;
+    }
+
+    #button-access, #button-capture, #button-download {
+        width: 35%;
+    }
+
+    #button-access, #button-capture, #button-download, label, select[name="device"] {
+        font-size: 13px;
+    }
+
+    #divSelect {
+        width: 42%;
+        margin-top: 3%;
+    }
+
+    #divVideo, #divCanva {
+        width: 48%;
+    }
+}
+
+@media (min-width: 1200px) {
+    h3 {
+        font-size: 20px;
+    }
+
+    #button-access, #button-capture, #button-download {
+        width: 35%;
+    }
+
+    #button-access, #button-capture, #button-download, label, select[name="device"] {
+        font-size: 13px;
+    }
+
+    #divSelect {
+        width: 38%;
+        margin-top: 3%;
+    }
+
+    #divVideo, #divCanva {
+        width: 40%;
+    }
 }

@@ -14,30 +14,34 @@
 </head>
 
 <body>
-    <div class="container d-flex flex-column justify-content-center" id="root">
+    <div class="container d-flex flex-column justify-content-center mb-5" id="root">
         <h3 class="text-center mt-5">Tomar foto con Js</h3>
-        <div class="container d-flex flex-column w-75 mt-4">
+        <div class="d-flex flex-column justify-content-center align-items-center mt-3">
             <button class="btn btn-success btn-lg mx-auto" id="button-access">Acceder cámara</button>
 
-            <div class="w-75 mx-auto hidden" id="divSelect">
-                <div class="mx-auto d-flex flex-column justify-content-center">
-                    <label>Selecciona un dispositivo</label>
+            <div class="hidden" id="divSelect">
+                <div class="mx-auto d-flex flex-column justify-content-center" style="background: lightskyblue; border-radius: 5px">
+                    <label class="text-center">Selecciona un dispositivo</label>
                     <select name="device" id="devicesList" class="form-control">Dispositivo</select>
                 </div>
             </div>
         </div>
 
-        <div class="w-75 alert mx-auto d-flex justify-content-center mt-5" id="state" role="alert"></div>
+        <div class="w-75 alert mx-auto d-flex justify-content-center" id="state" role="alert"></div>
 
-        <div class="d-flex justify-content-around mt-5">
-            <div id="divVideo" class="hidden">
-                <video src="" id="video"></video>
-                <button id="button-capture" class="btn btn-warning btn-lg mt-3">Tomar foto</button>
+        <div class="d-flex justify-content-around" id="div-container-stream">
+            <div id="divVideo" class=" container column hidden">
+                <div class="w-100 d-flex flex-column justify-content-center">
+                    <video src="" id="video" class="mb-3 w-100"></video>
+                    <button id="button-capture" class="btn btn-warning mx-auto">Tomar foto</button>
+                </div>
             </div>
 
-            <div id="divCanva" class="hidden">
-                <canvas id="canvas"></canvas>
-                <button id="button-download" class="btn btn-info btn-lg mt-3">Descargar foto</button>
+            <div id="divCanva" class="container hidden">
+                <div class="w-100 d-flex flex-column justify-content-center">
+                    <canvas id="canvas" class="mb-3"></canvas>
+                    <button id="button-download" class="btn btn-info mx-auto">Descargar foto</button>
+                </div>
             </div>
         </div>
 
