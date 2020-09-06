@@ -1,3 +1,4 @@
+
 // Declaramos elementos del DOM
 const $video = document.querySelector("#video"),
     $canvas = document.querySelector("#canvas"),
@@ -7,7 +8,7 @@ const $video = document.querySelector("#video"),
     $divSelect = document.querySelector('#divSelect'),
     $buttonCapture = document.querySelector('#button-capture'),
     $divVideo = document.getElementById('divVideo'),
-    $divCanva = document.querySelector('divCanva'),
+    $divCanva = document.querySelector('#divCanva'),
     $buttonDownload = document.querySelector('#button-download');
 
 let stream;
@@ -54,7 +55,6 @@ const _getUserMedia = (...arguments) =>
 
 
 const callCombo = (devicesVideo, idDevice) => {
-    console.log(idDevice, devicesVideo)
     const _xDocFrag = document.createDocumentFragment();
     const option = document.createElement('option');
     let _node = null;
@@ -86,16 +86,12 @@ const clearSelect = () => {
 const showStream = (idDevice) => {
     let photo;
 
-    console.log(idDevice, 'iddddd')
-
     _getUserMedia({
         video: {
             deviceId: idDevice,
         }
     },
         (streamObtained) => {
-   
-
             // Aquí ya tenemos permisos, ahora sí llenamos el select,
             // pues si no, no nos daría el nombre de los dispositivos
 
@@ -106,6 +102,7 @@ const showStream = (idDevice) => {
 
                         $divSelect.classList.remove('hidden');
                         $divVideo.classList.remove('hidden');
+                        $divCanva.classList.add('hidden');
 
                         // Escuchar cuando seleccionen otra opción y entonces llamar a esta función
                         $devicesList.onchange = () => {
@@ -116,6 +113,9 @@ const showStream = (idDevice) => {
                                     track.stop();
                                 });
                             }
+
+                            // Limpiamos el canvas
+                            $canvas.width = $canvas.width;
 
                             // Mostrar el nuevo stream con el dispositivo seleccionado
                             showStream($devicesList.value);
@@ -134,6 +134,8 @@ const showStream = (idDevice) => {
 
                             //Pausar reproducción
                             $video.pause();
+
+                            $divCanva.classList.remove('hidden');
 
                             //Obtener contexto del canvas y dibujar sobre él
                             let contexto = $canvas.getContext("2d");
@@ -171,8 +173,6 @@ const showStream = (idDevice) => {
 
 
 (() => {
-    let num = 0;
-
     $buttonAccess.addEventListener('click', () => {
         $state.innerHTML = '';
         clearSelect();
@@ -185,12 +185,7 @@ const showStream = (idDevice) => {
             // Comenzamos evaluamos si posee dispositivos de video
             getDevices()
                 .then(devicesList => {
-                    console.log(devicesList);
-
-                    console.log(devicesVideo(devicesList))
-
                     if (devicesVideo(devicesList).length > 0) {
-                        console.log(num+=1)
                         // Mostrar stream con el ID del primer dispositivo, luego el usuario puede cambiar
                         showStream(devicesList[0].deviceId);
                     } else {
@@ -200,4 +195,3 @@ const showStream = (idDevice) => {
         }
     });
 })();
-
