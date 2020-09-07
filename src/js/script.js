@@ -3,6 +3,7 @@
 const $video = document.querySelector("#video"),
     $canvas = document.querySelector("#canvas"),
     $buttonAccess = document.querySelector("#button-access"),
+    $buttonStopCamera = document.querySelector('#button-stop-camera'),
     $devicesList = document.querySelector("#devicesList"),
     $state = document.querySelector('#state'),
     $divSelect = document.querySelector('#divSelect'),
@@ -12,6 +13,16 @@ const $video = document.querySelector("#video"),
     $buttonDownload = document.querySelector('#button-download');
 
 let stream;
+
+
+const stopStream = (streamDetected) => {
+    if (streamDetected) {
+        streamDetected.getTracks().forEach((track) => {
+            console.log(track)
+            track.stop();
+        });
+    }
+}
 
 
 const alertSupportVideo = (textContent) => {
@@ -106,13 +117,9 @@ const showStream = (idDevice) => {
 
                         // Escuchar cuando seleccionen otra opción y entonces llamar a esta función
                         $devicesList.onchange = () => {
-                            
+
                             // Detener el stream
-                            if (stream) {
-                                stream.getTracks().forEach(function (track) {
-                                    track.stop();
-                                });
-                            }
+                            stopStream(stream);
 
                             // Limpiamos el canvas
                             $canvas.width = $canvas.width;
@@ -156,6 +163,19 @@ const showStream = (idDevice) => {
 
                             enlace.click();
                         });
+
+                        $buttonStopCamera.addEventListener('click', () => {
+                            // Apagamos cámara
+                            stopStream(stream);
+
+                            $canvas.width = $canvas.width;
+
+                            $divVideo.classList.add('hidden');
+                            $divCanva.classList.add('hidden');
+                            $divSelect.classList.add('hidden');
+                            $buttonStopCamera.classList.add('hidden');
+                            $buttonAccess.classList.remove('hidden');
+                        });
                     }
                 })
                 .catch(() => {
@@ -185,6 +205,9 @@ const showStream = (idDevice) => {
             getDevices()
                 .then(devicesList => {
                     if (devicesVideo(devicesList).length > 0) {
+                        $buttonAccess.classList.add('hidden');
+                        $buttonStopCamera.classList.remove('hidden');
+
                         // Mostrar stream con el ID del primer dispositivo, luego el usuario puede cambiar
                         showStream(devicesList[0].deviceId);
                     } else {
