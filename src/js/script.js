@@ -15,10 +15,10 @@ const $video = document.querySelector("#video"),
 let stream;
 
 
+// Detenemos el stream
 const stopStream = (streamDetected) => {
     if (streamDetected) {
         streamDetected.getTracks().forEach((track) => {
-            console.log(track)
             track.stop();
         });
     }
@@ -40,7 +40,7 @@ const devicesVideo = (devicesList) => {
     const devicesVideo = [];
 
     if (devicesList.length !== 0 && devicesList !== '') {
-        // Vamos a filtrarlos y guardar aquí los de vídeo
+        // Filtramos los dispositivos de vídeo
         devicesList.forEach((device) => {
             const type = device.kind;
 
@@ -54,13 +54,16 @@ const devicesVideo = (devicesList) => {
 }
 
 
+// Hallamos si el navegador tiene soporte de multimedia
 const hasSupportUserMedia = () =>
     (navigator.getUserMedia || (navigator.mozGetUserMedia || navigator.mediaDevices.getUserMedia) || navigator.webkitGetUserMedia || navigator.msGetUserMedia)
 
 
+// Obtengo número de dispositivos disponibles 
 const getDevices = () => navigator.mediaDevices.enumerateDevices();
 
 
+// Invocamos una función a navigator
 const _getUserMedia = (...arguments) =>
     (navigator.getUserMedia || (navigator.mozGetUserMedia || navigator.mediaDevices.getUserMedia) || navigator.webkitGetUserMedia || navigator.msGetUserMedia).apply(navigator, arguments);
 
@@ -94,17 +97,19 @@ const clearSelect = () => {
 };
 
 
+// Mostrar el stream
 const showStream = (idDevice) => {
     let photo;
 
     _getUserMedia({
         video: {
+            // Aquí indicamos cuál dispositivo usar
             deviceId: idDevice,
         }
     },
         (streamObtained) => {
-            // Aquí ya tenemos permisos, ahora sí llenamos el select,
-            // pues si no, no nos daría el nombre de los dispositivos
+            // Aquí ya tenemos permisos, ahora sí procedemos a llenar el select.
+            // Al tener permiso obtenemos el nombre de los dispositivos.
 
             getDevices()
                 .then((devicesList) => {
@@ -115,7 +120,7 @@ const showStream = (idDevice) => {
                         $divVideo.classList.remove('hidden');
                         $divCanva.classList.add('hidden');
 
-                        // Escuchar cuando seleccionen otra opción y entonces llamar a esta función
+                        // Evento de escucha cuando se seleccione otra opción 
                         $devicesList.onchange = () => {
 
                             // Detener el stream
@@ -126,7 +131,6 @@ const showStream = (idDevice) => {
 
                             // Mostrar el nuevo stream con el dispositivo seleccionado
                             showStream($devicesList.value);
-
                         }
 
                         // Simple asignación
@@ -136,8 +140,8 @@ const showStream = (idDevice) => {
                         $video.srcObject = stream;
                         $video.play();
 
-                        //Escuchar el click del botón para tomar la foto
-                        $buttonCapture.addEventListener("click", function () {
+                        // Capturamos la foto
+                        $buttonCapture.addEventListener("click", () => {
 
                             //Pausar reproducción
                             $video.pause();
@@ -168,6 +172,7 @@ const showStream = (idDevice) => {
                             // Apagamos cámara
                             stopStream(stream);
 
+                            // Limpiamos el canvas
                             $canvas.width = $canvas.width;
 
                             $divVideo.classList.add('hidden');
@@ -179,7 +184,7 @@ const showStream = (idDevice) => {
                     }
                 })
                 .catch(() => {
-
+                    alertSupportVideo('Ocurrió un error al buscar dispositivos de videos disponibles. Vuelva a intentarlo.');
                 });
 
 
@@ -196,23 +201,32 @@ const showStream = (idDevice) => {
         $state.innerHTML = '';
         clearSelect();
 
-        // Comenzamos viendo si tiene soporte
+        // Vemos si tiene soporte
         if (!hasSupportUserMedia()) {
             alertSupportVideo("Parece que tu navegador no soporta esta característica. Intenta actualizarlo.");
             return;
         } else {
-            // Comenzamos evaluamos si posee dispositivos de video
+            // Evaluamos si posee dispositivos de video
+
+            // Ojo: Aún el usuario no autoriza al navegador acceder a sus dispositivos. Por ello,
+            // aún no obtenemos los ids, ni nombres de los dispositivos. Aquí solo identificamos
+            // si el usuario posee dispositivos de videos o no.
             getDevices()
                 .then(devicesList => {
                     if (devicesVideo(devicesList).length > 0) {
                         $buttonAccess.classList.add('hidden');
                         $buttonStopCamera.classList.remove('hidden');
 
-                        // Mostrar stream con el ID del primer dispositivo, luego el usuario puede cambiar
+                        // Llamamos al stream pasando el ID del primer dispositivo (esto es un valor referente). Aquí 
+                        // el valor pasado es un string vacío ya que aún el usuario no permite al navegador el uso de 
+                        // sus dispositivos.
                         showStream(devicesList[0].deviceId);
                     } else {
                         alertSupportVideo('No se encontraron dispositivos de video disponibles.');
                     }
+                })
+                .catch(() => {
+                    alertSupportVideo('Ocurrió un error al buscar dispositivos de videos disponibles. Vuelva a intentarlo.');
                 });
         }
     });
