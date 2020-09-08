@@ -30,6 +30,10 @@ Cámara web que detecta múltiples dispositivos de video disponibles.
 - Desplegado en `gh-pages`.
 
 
+## Créditos
+
+Créditos al autor [parzibyte](https://github.com/parzibyte).
+
 ## Licencia
 
 Copyleft 🄯 2020, MIT.
