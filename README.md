@@ -7,6 +7,7 @@ Cámara web que detecta múltiples dispositivos de video disponibles.
 ## Descripción
 
 - Detecta dispositivos de videos disponibles.
+- Permite tomar foto.
 - Permite descargar la fotografía tomada.
 - Probado en desktop, móvil, y tablet.
 
